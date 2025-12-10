@@ -1,10 +1,9 @@
-app:
-  name: "bluebell"
-  mode: "dev"
-  port: 8080
-  version: "v0.0.1"
-  start_time: "2025-12-05"
-  machine_id: 1
+name: "bluebell"
+mode: "dev"
+port: 8080
+version: "v0.0.1"
+start_time: "2025-12-05"
+machine_id: 1
 
 log:
   level: "debug"
@@ -15,16 +14,16 @@ log:
 
 mysql:
   host: "127.0.0.1"
-  port: 13306
+  port: 3306
   user: "root"
-  password: "root1234"
+  password: "123456"
   dbname: "sql_demo"
   max_open_conns: 20
   max_idle_conns: 5
 
 redis:
   host: "127.0.0.1"
-  port: 16379
+  port: 6379
   password: ""
   db: 0
   pool_size: 10

@@ -16,7 +16,7 @@ type AppConfig struct {
 	Mode         string `mapstructure:"mode"`
 	Version      string `mapstructure:"version"`
 	StartTime    string `mapstructure:"start_time"`
-	MachineID    int64  `mapstructure:machine_id`
+	MachineID    int64  `mapstructure:"machine_id"`
 	Port         int    `mapstructure:"port"`
 	*LogConfig   `mapstructure:"log"`
 	*MySQLConfig `mapstructure:"mysql"`
@@ -72,7 +72,7 @@ func Init() (err error) {
 	// 上面是一样的
 	//
 	// 使用结构体，需要将配置 反序列化到Conf变量中
-	if err := viper.Unmarshal(Conf); err != nil {
+	if err = viper.Unmarshal(Conf); err != nil {
 
 	}
 	viper.WatchConfig()

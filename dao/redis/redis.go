@@ -13,7 +13,7 @@ func Init() (err error) {
 	rdb = redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%d",
 			viper.GetString("redis.host"),
-			viper.GetString("redis.port"),
+			viper.GetInt("redis.port"),
 		),
 		Password: viper.GetString("redis.password"),
 		DB:       viper.GetInt("redis.db"),

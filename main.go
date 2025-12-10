@@ -1,13 +1,14 @@
 package main
 
 import (
-	"bluebell/pkg/snowflake"
-	"context"
-	"fmt"
 	"bluebell/dao/mysql"
 	"bluebell/dao/redis"
+	"bluebell/logger"
+	"bluebell/pkg/snowflake"
 	"bluebell/routes"
 	"bluebell/setting"
+	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -15,12 +16,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
-
-var logger *zap.Logger
-var sugarLogger *zap.SugaredLogger
 
 func main() {
 	// 1. 加载配置
@@ -63,7 +60,7 @@ func main() {
 	r := routes.Setup()
 	// 6. 启动服务（优雅关机）
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", viper.GetInt("app.port")),
+		Addr:    fmt.Sprintf(":%d", setting.Conf.Port),
 		Handler: r,
 	}
 
