@@ -26,3 +26,12 @@ func SignUp(p *models.ParaSignUp) (err error) {
 	// 3.保存进数据库
 	return mysql.InsertUser(user)
 }
+
+func Login(p *models.ParaLogin) (err error) {
+	user := &models.User{
+		Username: p.Username,
+		Password: p.Password,
+	}
+	// 直接登录
+	return mysql.Login(user) //直接返回dao层的结果
+}
