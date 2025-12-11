@@ -19,7 +19,7 @@ import (
 // 此时的就不能全局，否则在main里会是：logger.Logger.Debug()，变量会很长
 // var Logger *zap.Logger
 
-func Init(cfg *setting.LogConfig) (err error) {
+func Init(cfg *setting.LogConfig, mode string) (err error) {
 	writeSyncer := getLogWriter(
 		cfg.Filename,
 		cfg.MaxSize,
@@ -43,9 +43,21 @@ func Init(cfg *setting.LogConfig) (err error) {
 	if err != nil {
 		return
 	}
-	//
-	// 将 1编码器 2写入器 3级别 组装成core
-	core := zapcore.NewCore(encoder, writeSyncer, level)
+
+	var core zapcore.Core
+	if mode == "dev" {
+		// 开发模式，日志输出到终端
+		consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
+		core = zapcore.NewTee(
+			zapcore.NewCore(encoder, writeSyncer, level),
+			zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), zapcore.DebugLevel),
+		)
+	} else {
+		//
+		// 将 1编码器 2写入器 3级别 组装成core
+		core = zapcore.NewCore(encoder, writeSyncer, level)
+	}
+
 	// New()是把核心零件组装成 完整的日志实例
 	// 其中，zap.AddCaller()是让 zap 沿着「函数调用链」向上找，记录「直接调用日志方法（如 Info/Error）的那一行代码」的位置。
 	lg := zap.New(core, zap.AddCaller())

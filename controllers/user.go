@@ -3,7 +3,6 @@ package controllers
 import (
 	"bluebell/logic"
 	"bluebell/models"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +20,7 @@ func SignUpHandler(c *gin.Context) {
 	// add: 实际上gin内置了validator库，用于判断，而且用法十分简单，打tag就行
 	//
 	// 有人说，前端用js已经判断过了，但是如果禁用了js，或者用脚本攻击了js，所以不要相信前端，后端是一定要做的
-	if err := c.ShouldBindJSON(&p); err != nil {
+	if err := c.ShouldBindJSON(p); err != nil {
 		// 1.1 请求参数有误 直接返回响应
 		// func Error(msg string, fields ...zap.Field)
 		// 第一个参数是msg,第二个及后续参数都是「结构化日志字段（Field）」，作用是给日志附加「可解析的关键信息」（而非单纯拼接字符串）
@@ -53,7 +52,6 @@ func SignUpHandler(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"msg": "注册失败",
 		})
-		fmt.Printf("注册失败：%v", err)
 	}
 	// 3. 返回响应
 
