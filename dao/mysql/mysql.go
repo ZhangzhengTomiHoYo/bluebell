@@ -1,10 +1,7 @@
 package mysql
 
 import (
-	"bluebell/models"
 	"bluebell/setting"
-	"database/sql"
-	"errors"
 	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -39,25 +36,4 @@ func Init(cfg *setting.MySQLConfig) (err error) {
 // 可以封装一个Close
 func Close() {
 	_ = db.Close()
-}
-
-func Login(user *models.User) (err error) {
-	oPassword := user.Password
-	sqlStr := `select user_id, username, password from user where username=?`
-	err = db.Get(user, sqlStr, user.Username)
-	// 一般是用户名或密码错误 如果直接告诉用户不存在 就会疯狂的尝试登录网站
-	if err == sql.ErrNoRows {
-		//return errors.New("用户不存在")
-		return errors.New("用户不存在")
-	}
-	if err != nil {
-		// 查询数据库失败
-		return err
-	}
-	// 判断密码是否正确
-	password := encryptPassword(oPassword) // 加密的密码
-	if password != user.Password {
-		return errors.New("密码错误")
-	}
-	return
 }

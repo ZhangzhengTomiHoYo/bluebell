@@ -3,6 +3,7 @@ package mysql
 import (
 	"bluebell/models"
 	"crypto/md5"
+	"database/sql"
 	"encoding/hex"
 	"errors"
 )
@@ -11,6 +12,12 @@ import (
 // 等待logic层根据业务逻辑调用
 
 const secret = "zhangzheng"
+
+var (
+	ErrorUserExist       = errors.New("用户已存在(dao层user.go)")
+	ErrorUserNotExist    = errors.New("用户不存在(dao层user.go)")
+	ErrorInvalidPassword = errors.New("密码错误(dao层user.go)")
+)
 
 // CheckUserExist 检查用户名的用户是否存在
 func CheckUserExist(username string) (err error) {
@@ -21,7 +28,7 @@ func CheckUserExist(username string) (err error) {
 		return err
 	}
 	if count > 0 {
-		return errors.New("用户已存在哈哈哈")
+		return ErrorUserExist // 代码里不要出现具体的字符串
 	}
 	return
 }
@@ -40,4 +47,24 @@ func encryptPassword(oPassword string) string {
 	h := md5.New()
 	h.Write([]byte(secret))
 	return hex.EncodeToString(h.Sum([]byte(oPassword)))
+}
+
+func Login(user *models.User) (err error) {
+	oPassword := user.Password
+	sqlStr := `select user_id, username, password from user where username=?`
+	err = db.Get(user, sqlStr, user.Username)
+	// 一般是用户名或密码错误 如果直接告诉用户不存在 就会疯狂的尝试登录网站
+	if err == sql.ErrNoRows {
+		return ErrorUserNotExist
+	}
+	if err != nil {
+		// 查询数据库失败
+		return err
+	}
+	// 判断密码是否正确
+	password := encryptPassword(oPassword) // 加密的密码
+	if password != user.Password {
+		return ErrorInvalidPassword
+	}
+	return
 }

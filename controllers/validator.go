@@ -62,6 +62,14 @@ func InitTrans(locale string) (err error) {
 	return
 }
 
+func removeTopStruct(fields map[string]string) map[string]string {
+	res := map[string]string{}
+	for field, err := range fields {
+		res[field[strings.Index(field, ".")+1:]] = err
+	}
+	return res
+}
+
 type SignUpParam struct {
 	Age        uint8  `json:"age" binding:"gte=1,lte=130"`
 	Name       string `json:"name" binding:"required"`
