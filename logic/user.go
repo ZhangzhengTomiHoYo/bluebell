@@ -3,6 +3,7 @@ package logic
 import (
 	"bluebell/dao/mysql"
 	"bluebell/models"
+	"bluebell/pkg/jwt"
 	"bluebell/pkg/snowflake"
 )
 
@@ -27,11 +28,15 @@ func SignUp(p *models.ParaSignUp) (err error) {
 	return mysql.InsertUser(user)
 }
 
-func Login(p *models.ParaLogin) (err error) {
+func Login(p *models.ParaLogin) (token string, err error) {
 	user := &models.User{
 		Username: p.Username,
 		Password: p.Password,
 	}
-	// 直接登录
-	return mysql.Login(user) //直接返回dao层的结果
+	// 传递的是指针，就能拿到user.UserID
+	if err := mysql.Login(user); err != nil {
+		return "", err
+	}
+
+	return jwt.GenToken(user.UserID, user.Username)
 }
